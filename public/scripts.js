@@ -1,33 +1,47 @@
-// Elementos básicos
+// Elements
+const avatarImg = document.getElementById("avatarImg");
+const listenPulse = document.getElementById("listenPulse");
+const avatarMsg = document.getElementById("avatarMsg");
+
 const voiceSelect = document.getElementById("voiceSelect");
 const inputText = document.getElementById("inputText");
 const speakBtn = document.getElementById("speakBtn");
 const listenBtn = document.getElementById("listenBtn");
+const clearBtn = document.getElementById("clearBtn");
 const listenStatus = document.getElementById("listenStatus");
-const avatarMsg = document.getElementById("avatarMsg");
 const contrastBtn = document.getElementById("contrastBtn");
-const listenPulse = document.getElementById("listenPulse");
 
-// Texto -> Libras
 const librasInput = document.getElementById("librasInput");
 const librasBtn = document.getElementById("librasBtn");
 const librasStatus = document.getElementById("librasStatus");
 const librasVideo = document.getElementById("librasVideo");
 let phrasesMap = {};
 
-// Preferências
-const PREFS_KEY = "librai_prefs_v3";
+// Prefs
+const PREFS_KEY = "librai_prefs_v5";
 const prefs = JSON.parse(localStorage.getItem(PREFS_KEY) || "{}");
 function savePrefs(){ localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); }
 
-// Alto contraste
-function applyContrastPref(){ document.body.classList.toggle('high-contrast', !!prefs.contrast); }
-applyContrastPref();
-contrastBtn?.setAttribute('aria-pressed', String(!!prefs.contrast));
-contrastBtn?.addEventListener('click', () => { prefs.contrast = !prefs.contrast; savePrefs(); applyContrastPref();
-contrastBtn?.setAttribute('aria-pressed', String(!!prefs.contrast)); contrastBtn.setAttribute('aria-pressed', String(!!prefs.contrast)); });
+// Avatar states
+function setAvatarState(state){
+  if (!avatarImg) return;
+  const map = {
+    "default": "assets/avatar_base.png",
+    "reading": "assets/avatar_reading.gif",
+    "listening": "assets/avatar_listening.gif"
+  };
+  avatarImg.src = map[state] || map.default;
+}
 
-// Atalhos globais
+// Contrast
+function applyContrastPref(){
+  document.body.classList.toggle('high-contrast', !!prefs.contrast);
+  contrastBtn?.setAttribute('aria-pressed', String(!!prefs.contrast));
+}
+applyContrastPref();
+contrastBtn?.addEventListener('click', () => { prefs.contrast = !prefs.contrast; savePrefs(); applyContrastPref(); });
+
+// Shortcuts
 window.addEventListener('keydown', (e) => {
   if (e.target && ['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
   if (e.key.toLowerCase() === 'h') { e.preventDefault(); contrastBtn?.click(); }
@@ -57,6 +71,8 @@ function speak(text) {
   const u = new SpeechSynthesisUtterance(text);
   const v = speechSynthesis.getVoices().find(v => v.voiceURI === voiceSelect.value);
   if (v) u.voice = v; u.lang = (v && v.lang) || "pt-BR";
+  u.onstart = () => setAvatarState('reading');
+  u.onend = () => setAvatarState('default');
   speechSynthesis.cancel(); speechSynthesis.speak(u);
 }
 speakBtn?.addEventListener("click", () => {
@@ -65,32 +81,55 @@ speakBtn?.addEventListener("click", () => {
   speak(text);
 });
 
-// ---- STT
+// ---- STT with duplication FIX
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec = null;
 if (SR) {
-  const rec = new SR();
+  rec = new SR();
   rec.lang = "pt-BR"; rec.interimResults = true; rec.continuous = true;
-  let listening = false;
+  let listening = False = false
+  let finalBuffer = ""; // accumulate only final segments
+  let startedOnce = false;
+
   function setListening(on){
     listening = on;
     listenBtn.textContent = on ? "⏸️ Pausar ditado" : "🎙️ Iniciar ditado";
     listenStatus.textContent = on ? "Ouvindo…" : "Parado.";
     listenPulse.classList.toggle('active', on);
+    setAvatarState(on ? 'listening' : 'default');
     avatarMsg.textContent = on ? "Estou te ouvindo 👂" : "Pronto! Transcrição concluída ✅";
   }
+
   rec.onresult = (e) => {
-    let finalText = "";
+    let interim = "";
     for (let i = e.resultIndex; i < e.results.length; i++) {
       const chunk = e.results[i][0].transcript;
-      if (e.results[i].isFinal) finalText += chunk + " ";
-      else inputText.value = (inputText.value.replace(/\s*$/, "")) + " " + chunk;
+      if (e.results[i].isFinal) finalBuffer += chunk + " ";
+      else interim += chunk + " ";
     }
-    if (finalText) inputText.value += finalText;
+    // current text = existing (before start) + finalBuffer + interim
+    inputText.value = finalBuffer + interim;
   };
-  rec.onstart = () => setListening(true);
-  rec.onend   = () => setListening(false);
+
+  rec.onstart = () => { setListening(true); };
+  rec.onend   = () => { setListening(false); };
   rec.onerror = (ev) => { listenStatus.textContent = "Erro: " + ev.error; };
-  listenBtn?.addEventListener("click", () => { if (!listening) { try { rec.start(); } catch(_){} } else rec.stop(); });
+
+  listenBtn?.addEventListener("click", () => {
+    if (!listening) {
+      // When starting, preserve any text already present as the base, then append recognition
+      finalBuffer = inputText.value.trim();
+      if (finalBuffer && !finalBuffer.endsWith(" ")) finalBuffer += " ";
+      try { rec.start(); } catch(_) {}
+    } else {
+      rec.stop();
+    }
+  });
+
+  clearBtn?.addEventListener("click", () => {
+    inputText.value = "";
+    finalBuffer = "";
+  });
 } else {
   listenStatus.textContent = "Seu navegador não suporta ditado (STT). Tente Chrome/Edge.";
 }
@@ -109,7 +148,6 @@ async function loadPhrases(){
   try {
     const res = await fetch('data/phrases.json', {cache: 'no-store'});
     const data = await res.json();
-    // cria mapa normalizado
     phrasesMap = {};
     Object.keys(data).forEach(k => { phrasesMap[normalize(k)] = data[k]; });
   } catch (e) {

@@ -17,7 +17,7 @@
       <h1>LibrAi</h1>
     </div>
     <div class="top-actions" role="group" aria-label="Preferências">
-      <button id="contrastBtn" class="ghost" title="Alto contraste (atalho H)">Alto contraste</button>
+      <button id="contrastBtn" class="ghost" title="Alto contraste (atalho H)" aria-pressed="false">Alto contraste</button>
       <span class="tagline">Comunicação sem barreiras</span>
     </div>
   </header>
@@ -27,8 +27,7 @@
       <!-- Lateral com avatar -->
       <aside class="card avatar" aria-label="Assistente visual">
         <div class="circle" aria-hidden="true">
-          <img src="assets/avatar.svg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';" />
-          <div class="fallback" style="display:none;">LibrAi</div>
+          <img id="avatarImg" src="assets/avatar_base.png" alt="Mascote LibrAi" />
           <div class="pulse" id="listenPulse" aria-hidden="true"></div>
         </div>
         <p id="avatarMsg">Olá! Eu sou o LibrAi, pronto para te ajudar 😉</p>
@@ -40,11 +39,14 @@
           <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V20H8v2h8v-2h-3v-2.08A7 7 0 0 0 19 11Z"/></svg>
           Fala → Texto
         </h2>
-        <button id="listenBtn" aria-pressed="false">
-          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V20H8v2h8v-2h-3v-2.08A7 7 0 0 0 19 11Z"/></svg>
-          Iniciar ditado
-        </button>
-        <div id="listenStatus" class="status" aria-live="polite"></div>
+        <div class="row">
+          <button id="listenBtn" aria-pressed="false">
+            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V20H8v2h8v-2h-3v-2.08A7 7 0 0 0 19 11Z"/></svg>
+            Iniciar ditado
+          </button>
+          <button id="clearBtn" class="ghost small">Limpar</button>
+        </div>
+        <div id="listenStatus" class="status" aria-live="polite">Parado.</div>
         <label for="inputText">Texto</label>
         <textarea id="inputText" placeholder="Fale algo ou digite aqui…"></textarea>
         <p class="muted">Atalho: <kbd>S</kbd> inicia/pausa o ditado.</p>

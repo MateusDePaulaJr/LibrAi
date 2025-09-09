@@ -1,14 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="576" viewBox="0 0 1024 576">
-  <defs>
-    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0" stop-color="#bfdbfe"/>
-      <stop offset="1" stop-color="#93c5fd"/>
-    </linearGradient>
-  </defs>
-  <rect width="1024" height="576" fill="url(#g)"/>
-  <g fill="#1d4ed8">
-    <circle cx="160" cy="288" r="90"/>
-    <rect x="220" y="248" width="520" height="80" rx="12" fill="#2563eb"/>
-  </g>
-  <text x="260" y="300" font-family="Inter, Arial, sans-serif" font-size="36" fill="#fff">Texto → Libras (adicione seus clipes em /public/clips)</text>
-</svg>
+<svg xmlns='http://www.w3.org/2000/svg' width='1024' height='576' viewBox='0 0 1024 576'><defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'><stop offset='0' stop-color='#bfdbfe'/><stop offset='1' stop-color='#93c5fd'/></linearGradient></defs><rect width='1024' height='576' fill='url(#g)'/><text x='70' y='310' font-family='Inter, Arial, sans-serif' font-size='36' fill='#1d4ed8'>Texto → Libras (adicione seus clipes em /public/clips)</text></svg>
