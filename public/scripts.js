@@ -23,7 +23,9 @@ function savePrefs(){ localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); }
 // Alto contraste
 function applyContrastPref(){ document.body.classList.toggle('high-contrast', !!prefs.contrast); }
 applyContrastPref();
-contrastBtn?.addEventListener('click', () => { prefs.contrast = !prefs.contrast; savePrefs(); applyContrastPref(); });
+contrastBtn?.setAttribute('aria-pressed', String(!!prefs.contrast));
+contrastBtn?.addEventListener('click', () => { prefs.contrast = !prefs.contrast; savePrefs(); applyContrastPref();
+contrastBtn?.setAttribute('aria-pressed', String(!!prefs.contrast)); contrastBtn.setAttribute('aria-pressed', String(!!prefs.contrast)); });
 
 // Atalhos globais
 window.addEventListener('keydown', (e) => {

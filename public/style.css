@@ -59,3 +59,23 @@ input[type="text"] { width: 100%; border-radius: 12px; border: 1px solid #cbd5e1
 .video-wrap { margin-top: 8px; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; background: #fff; }
 .video-wrap video { display: block; width: 100%; height: auto; max-height: 360px; background: #000; }
 .row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+
+/* ===== High-Contrast explicit component styles ===== */
+body.high-contrast .topbar { background:#000; color:#fff; box-shadow:none; border-bottom:2px solid #fff; }
+body.high-contrast .topbar .ghost { border-color:#fff; color:#000; background:#fff; }
+body.high-contrast .card { background:#000; color:#fff; border:2px solid #fff; box-shadow:none; }
+body.high-contrast h2 { color:#fff; }
+body.high-contrast label { color:#fff; }
+body.high-contrast .muted, 
+body.high-contrast #avatarMsg { color:#fff; }
+body.high-contrast .avatar .circle { border-color:#fff; background:#000; }
+body.high-contrast .pulse.active { border-color:rgba(255,255,255,.6); }
+body.high-contrast button,
+body.high-contrast select { background:#000; color:#fff; border:2px solid #fff; }
+body.high-contrast button:hover { background:#111; }
+body.high-contrast select { background:#000; }
+body.high-contrast textarea,
+body.high-contrast input[type="text"] { background:#000; color:#fff; border:2px solid #fff; }
+body.high-contrast .video-wrap { border:2px solid #fff; background:#000; }
+body.high-contrast .wrapper { background:transparent; }
