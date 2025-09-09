@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tradutor Acessível – MVP</title>
+  <meta name="description" content="MVP acessível para comunicação fala↔texto e texto→voz (pt-BR)." />
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #0f172a;
+      --muted: #475569;
+      --accent: #2563eb;
+      --card: #f8fafc;
+      --focus: #3b82f6;
+      --radius: 16px;
+      --font: 18px;
+    }
+    body.high-contrast {
+      --bg: #000000; --fg: #ffffff; --muted:#e5e7eb; --accent:#ffffff; --card:#111111; --focus:#ffffff;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+      background: var(--bg); color: var(--fg); font-size: var(--font); line-height: 1.45;
+    }
+    .container { max-width: 880px; margin: 0 auto; padding: 24px; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+    header h1 { font-size: clamp(1.25rem, 2.5vw, 1.75rem); margin: 0; }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    button, select {
+      border: 2px solid var(--accent); background: transparent; color: var(--fg);
+      padding: 10px 14px; border-radius: var(--radius); font-weight: 600; cursor: pointer;
+    }
+    button:hover, select:hover { background: var(--accent); color: var(--bg); }
+    button:focus-visible, select:focus-visible, textarea:focus-visible, input:focus-visible {
+      outline: 3px solid var(--focus); outline-offset: 2px;
+    }
+    main { display: grid; gap: 16px; }
+    .card {
+      background: var(--card); border-radius: var(--radius); padding: 16px; border: 1px solid rgba(0,0,0,.06);
+    }
+    .row { display: grid; gap: 12px; }
+    label { font-weight: 700; }
+    textarea {
+      width: 100%; min-height: 120px; resize: vertical; font: inherit; padding: 12px; border-radius: 12px; border: 1px solid #cbd5e1; background: #fff; color: #0f172a;
+    }
+    .kbd {
+      display: inline-block; border: 1px solid #cbd5e1; border-bottom-width: 3px; padding: 2px 6px; border-radius: 6px; background: #fff; color: #0f172a; font-weight: 700;
+    }
+    footer { margin-top: 8px; font-size: .95rem; color: var(--muted); }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    .toolbar { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .pill { background: #e2e8f0; color:#0f172a; padding:4px 10px; border-radius:999px; font-size:.9rem; }
+    .status { min-height: 1.2em; }
+    .two-col { display:grid; gap:16px; grid-template-columns: 1fr; }
+    @media (min-width: 880px) { .two-col { grid-template-columns: 1fr 1fr; } }
+  </style>
+</head>
+<body>
+  <a class="sr-only" href="#conteudo">Ir para o conteúdo</a>
+  <div class="container" role="application" aria-label="Tradutor acessível – MVP">
+    <header>
+      <h1>Tradutor Acessível – MVP</h1>
+      <div class="actions" role="group" aria-label="Preferências">
+        <button id="contrastBtn" aria-pressed="false" title="Alternar alto contraste (atalho H)">Alto contraste</button>
+        <button id="fontPlus" title="Aumentar fonte (atalho +)">A+</button>
+        <button id="fontMinus" title="Diminuir fonte (atalho -)">A-</button>
+        <label class="sr-only" for="voiceSelect">Selecionar voz para leitura</label>
+        <select id="voiceSelect" aria-label="Voz para leitura (pt-BR recomendado)">
+          <option>Carregando vozes…</option>
+        </select>
+      </div>
+    </header>
+
+    <main id="conteudo">
+      <section class="card two-col" aria-labelledby="fala-para-texto">
+        <div class="row">
+          <h2 id="fala-para-texto">Fala → Texto</h2>
+          <div class="toolbar">
+            <button id="listenBtn" aria-pressed="false" title="Iniciar/pausar ditado (atalho S)">🎙️ Iniciar ditado</button>
+            <span class="pill">Atalho: <span class="kbd">S</span></span>
+          </div>
+          <p id="sttSupport" role="note" aria-live="polite"></p>
+          <div aria-live="polite" aria-atomic="true" class="status" id="listenStatus"></div>
+          <label for="inputText">Texto</label>
+          <textarea id="inputText" placeholder="Fale algo ou digite aqui…"></textarea>
+        </div>
+
+        <div class="row">
+          <h2 id="texto-para-fala">Texto → Voz</h2>
+          <div class="toolbar">
+            <button id="speakBtn" title="Ler texto em voz alta (atalho L)">🔊 Ouvir</button>
+            <span class="pill">Atalho: <span class="kbd">L</span></span>
+          </div>
+          <p class="muted">Selecione a voz (preferir pt-BR) no topo. O navegador fará a leitura do campo “Texto”.</p>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="acessibilidade">
+        <h2 id="acessibilidade">Acessibilidade & atalhos</h2>
+        <ul>
+          <li><span class="kbd">Tab</span> navega por todos os controles.</li>
+          <li><span class="kbd">H</span> alterna alto contraste. <span class="kbd">+</span>/<span class="kbd">-</span> ajusta o tamanho da fonte. <span class="kbd">S</span> inicia/para ditado. <span class="kbd">L</span> lê o texto.</li>
+          <li>Preferências ficam salvas no dispositivo (sem conta/login).</li>
+        </ul>
+        <footer>Próximos passos: (1) Texto → Libras com clipes/avatares; (2) Libras → Texto começando pelo alfabeto manual.</footer>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const PREFS_KEY = "mvp_prefs_v1";
+    const prefs = JSON.parse(localStorage.getItem(PREFS_KEY) || "{}");
+
+    const body = document.body;
+    const contrastBtn = document.getElementById("contrastBtn");
+    const fontPlus = document.getElementById("fontPlus");
+    const fontMinus = document.getElementById("fontMinus");
+    const voiceSelect = document.getElementById("voiceSelect");
+    const inputText = document.getElementById("inputText");
+    const speakBtn = document.getElementById("speakBtn");
+    const listenBtn = document.getElementById("listenBtn");
+    const listenStatus = document.getElementById("listenStatus");
+    const sttSupport = document.getElementById("sttSupport");
+
+    function applyPrefs() {
+      if (prefs.contrast) {
+        body.classList.add("high-contrast");
+        contrastBtn.setAttribute("aria-pressed", "true");
+      }
+      if (prefs.fontPx) document.documentElement.style.setProperty("--font", prefs.fontPx + "px");
+      if (prefs.voiceURI) voiceSelect.value = prefs.voiceURI;
+    }
+    function savePrefs() { localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); }
+
+    contrastBtn.addEventListener("click", () => {
+      const isOn = body.classList.toggle("high-contrast");
+      contrastBtn.setAttribute("aria-pressed", String(isOn));
+      prefs.contrast = isOn; savePrefs();
+    });
+    function changeFont(delta) {
+      const current = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--font")) || 18;
+      const next = Math.max(14, Math.min(24, current + delta));
+      document.documentElement.style.setProperty("--font", next + "px");
+      prefs.fontPx = next; savePrefs();
+    }
+    fontPlus.addEventListener("click", () => changeFont(+2));
+    fontMinus.addEventListener("click", () => changeFont(-2));
+
+    function loadVoices() {
+      const voices = speechSynthesis.getVoices();
+      voiceSelect.innerHTML = "";
+      const preferred = [];
+      const others = [];
+      voices.forEach(v => (v.lang.toLowerCase().startsWith("pt") ? preferred : others).push(v));
+      const sorted = [...preferred, ...others];
+      if (sorted.length === 0) {
+        const opt = document.createElement("option");
+        opt.textContent = "Nenhuma voz disponível";
+        voiceSelect.appendChild(opt);
+        return;
+      }
+      sorted.forEach(v => {
+        const opt = document.createElement("option");
+        opt.value = v.voiceURI; opt.textContent = `${v.name} (${v.lang})${v.default ? " — padrão" : ""}`;
+        voiceSelect.appendChild(opt);
+      });
+      if (prefs.voiceURI) voiceSelect.value = prefs.voiceURI;
+    }
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+    loadVoices();
+
+    voiceSelect.addEventListener("change", () => {
+      prefs.voiceURI = voiceSelect.value; savePrefs();
+    });
+
+    function speak(text) {
+      if (!("speechSynthesis" in window)) return alert("Seu navegador não suporta leitura de texto (TTS).");
+      const utter = new SpeechSynthesisUtterance(text);
+      const voice = speechSynthesis.getVoices().find(v => v.voiceURI === voiceSelect.value);
+      if (voice) utter.voice = voice;
+      utter.lang = (voice && voice.lang) || "pt-BR";
+      utter.rate = 1; utter.pitch = 1; utter.volume = 1;
+      speechSynthesis.cancel();
+      speechSynthesis.speak(utter);
+    }
+    speakBtn.addEventListener("click", () => {
+      const text = inputText.value.trim();
+      if (!text) return alert("Digite ou dite algo para ouvir.");
+      speak(text);
+    });
+
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      sttSupport.textContent = "Seu navegador não oferece ditado de voz (STT). Tente Chrome/Edge no desktop ou Android.";
+    } else {
+      sttSupport.textContent = "Dica: fale pausadamente e permita o uso do microfone.";
+      const rec = new SR();
+      rec.lang = "pt-BR"; rec.interimResults = true; rec.continuous = true;
+      let listening = false;
+      function setListening(on) {
+        listening = on;
+        listenBtn.setAttribute("aria-pressed", String(on));
+        listenBtn.textContent = on ? "⏸️ Pausar ditado" : "🎙️ Iniciar ditado";
+        listenStatus.textContent = on ? "Ouvindo…" : "Parado.";
+      }
+      rec.onresult = (e) => {
+        let finalText = "";
+        for (let i = e.resultIndex; i < e.results.length; i++) {
+          const chunk = e.results[i][0].transcript;
+          if (e.results[i].isFinal) finalText += chunk + " ";
+          else inputText.value = (inputText.value.replace(/\s*$/, "")) + " " + chunk;
+        }
+        if (finalText) inputText.value += finalText;
+      };
+      rec.onstart = () => setListening(true);
+      rec.onend = () => setListening(false);
+      rec.onerror = (ev) => { listenStatus.textContent = "Erro: " + ev.error; };
+
+      listenBtn.addEventListener("click", () => {
+        if (!listening) { try { rec.start(); } catch(_){} }
+        else rec.stop();
+      });
+
+      window.addEventListener("keydown", (e) => {
+        if (e.target && ["INPUT","TEXTAREA","SELECT"].includes(e.target.tagName)) return;
+        if (e.key === "s" || e.key === "S") { e.preventDefault(); listenBtn.click(); }
+        if (e.key === "l" || e.key === "L") { e.preventDefault(); speakBtn.click(); }
+        if (e.key === "h" || e.key === "H") { e.preventDefault(); document.getElementById("contrastBtn").click(); }
+        if (e.key === "+") { e.preventDefault(); document.getElementById("fontPlus").click(); }
+        if (e.key === "-") { e.preventDefault(); document.getElementById("fontMinus").click(); }
+      });
+    }
+
+    applyPrefs();
+  </script>
+</body>
+</html>

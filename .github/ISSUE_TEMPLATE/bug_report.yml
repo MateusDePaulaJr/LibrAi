@@ -1,0 +1,24 @@
+name: Bug report
+description: Reporte um problema
+title: "[BUG] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: desc
+    attributes:
+      label: Descrição
+      description: O que aconteceu?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Passos para reproduzir
+      value: |
+        1.
+        2.
+        3.
+  - type: input
+    id: browser
+    attributes:
+      label: Navegador/SO
