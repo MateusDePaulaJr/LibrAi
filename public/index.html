@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>LibrAi</title>
   <meta name="description" content="LibrAi — Comunicação sem barreiras" />
-  <!-- Inter font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -28,7 +27,6 @@
       <!-- Lateral com avatar -->
       <aside class="card avatar" aria-label="Assistente visual">
         <div class="circle" aria-hidden="true">
-          <!-- usa SVG por padrão; fallback de texto se falhar -->
           <img src="assets/avatar.svg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';" />
           <div class="fallback" style="display:none;">LibrAi</div>
           <div class="pulse" id="listenPulse" aria-hidden="true"></div>
@@ -69,13 +67,22 @@
         </button>
       </section>
 
-      <!-- Texto -> Libras (placeholder) -->
+      <!-- Texto -> Libras -->
       <section class="card" aria-labelledby="texto-libras">
         <h2 id="texto-libras">
           <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 7a2 2 0 0 1 2-2h1v2H9v2H7V7m5-2h2v2h-2V5m4 0h1a2 2 0 0 1 2 2v1h-2V7h-1V5M5 9H3v6a2 2 0 0 0 2 2h6v-2H5V9m14 2h2v4a2 2 0 0 1-2 2h-4v-2h4v-4Z"/></svg>
-          Texto → Libras (em breve)
+          Texto → Libras (protótipo)
         </h2>
-        <p>Em seguida vamos ligar este card a clipes/avatares de Libras.</p>
+        <label for="librasInput">Escreva a frase</label>
+        <input id="librasInput" type="text" placeholder="Ex.: bom dia" />
+        <div class="row">
+          <button id="librasBtn">Mostrar em Libras</button>
+          <p class="muted" id="librasStatus" aria-live="polite"></p>
+        </div>
+        <div class="video-wrap">
+          <video id="librasVideo" controls preload="metadata" poster="assets/poster_libras.svg"></video>
+        </div>
+        <p class="muted small">Frases de exemplo: <code>bom dia</code>, <code>tudo bem</code>, <code>obrigado</code>. Você pode adicionar mais em <code>public/data/phrases.json</code>.</p>
       </section>
     </div>
   </main>

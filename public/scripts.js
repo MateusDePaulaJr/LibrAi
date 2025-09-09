@@ -1,4 +1,4 @@
-// Elementos
+// Elementos básicos
 const voiceSelect = document.getElementById("voiceSelect");
 const inputText = document.getElementById("inputText");
 const speakBtn = document.getElementById("speakBtn");
@@ -8,19 +8,22 @@ const avatarMsg = document.getElementById("avatarMsg");
 const contrastBtn = document.getElementById("contrastBtn");
 const listenPulse = document.getElementById("listenPulse");
 
+// Texto -> Libras
+const librasInput = document.getElementById("librasInput");
+const librasBtn = document.getElementById("librasBtn");
+const librasStatus = document.getElementById("librasStatus");
+const librasVideo = document.getElementById("librasVideo");
+let phrasesMap = {};
+
 // Preferências
-const PREFS_KEY = "librai_prefs_v2";
+const PREFS_KEY = "librai_prefs_v3";
 const prefs = JSON.parse(localStorage.getItem(PREFS_KEY) || "{}");
 function savePrefs(){ localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); }
 
 // Alto contraste
-function applyContrastPref(){
-  document.body.classList.toggle('high-contrast', !!prefs.contrast);
-}
+function applyContrastPref(){ document.body.classList.toggle('high-contrast', !!prefs.contrast); }
 applyContrastPref();
-contrastBtn?.addEventListener('click', () => {
-  prefs.contrast = !prefs.contrast; savePrefs(); applyContrastPref();
-});
+contrastBtn?.addEventListener('click', () => { prefs.contrast = !prefs.contrast; savePrefs(); applyContrastPref(); });
 
 // Atalhos globais
 window.addEventListener('keydown', (e) => {
@@ -32,6 +35,7 @@ window.addEventListener('keydown', (e) => {
 // ---- TTS
 function loadVoices() {
   const voices = speechSynthesis.getVoices();
+  if (!voiceSelect) return;
   voiceSelect.innerHTML = "";
   const preferred = [], others = [];
   voices.forEach(v => (v.lang?.toLowerCase().startsWith("pt") ? preferred : others).push(v));
@@ -44,7 +48,6 @@ function loadVoices() {
 }
 window.speechSynthesis.onvoiceschanged = loadVoices;
 try { loadVoices(); } catch(_) {}
-
 voiceSelect?.addEventListener("change", () => { prefs.voiceURI = voiceSelect.value; savePrefs(); });
 
 function speak(text) {
@@ -90,5 +93,41 @@ if (SR) {
   listenStatus.textContent = "Seu navegador não suporta ditado (STT). Tente Chrome/Edge.";
 }
 
-// Acessibilidade: evitar quebra do layout por textos longos nas opções de voz
-if (voiceSelect) voiceSelect.style.maxWidth = '100%';
+// ---- Texto -> Libras (protótipo)
+function normalize(str){
+  return (str || "")
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/\p{Diacritic}+/gu, '')
+    .replace(/[^a-z0-9\s]/g, '')
+    .trim();
+}
+
+async function loadPhrases(){
+  try {
+    const res = await fetch('data/phrases.json', {cache: 'no-store'});
+    const data = await res.json();
+    // cria mapa normalizado
+    phrasesMap = {};
+    Object.keys(data).forEach(k => { phrasesMap[normalize(k)] = data[k]; });
+  } catch (e) {
+    librasStatus.textContent = "Não consegui carregar as frases (phrases.json).";
+  }
+}
+loadPhrases();
+
+function playLibras(){
+  const q = normalize(librasInput.value);
+  if (!q) { librasStatus.textContent = "Digite uma frase."; return; }
+  const file = phrasesMap[q];
+  if (!file){
+    librasStatus.textContent = "Ainda não sei essa frase. Você pode adicioná-la em data/phrases.json.";
+    librasVideo.removeAttribute('src'); librasVideo.load();
+    return;
+  }
+  librasVideo.src = 'clips/' + file;
+  librasVideo.play().catch(()=>{});
+  librasStatus.textContent = "Traduzindo para Libras…";
+}
+librasBtn?.addEventListener('click', playLibras);
+librasInput?.addEventListener('keydown', (e)=>{ if (e.key === 'Enter') { e.preventDefault(); playLibras(); }});
