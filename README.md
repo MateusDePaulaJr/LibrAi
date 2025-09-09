@@ -1,4 +1,4 @@
-# 🖐️ LibrAi
+# 🖐️ LibrAi - EM DESENVOLVIMENTO
 
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-LibrAi-blue?logo=github)](https://mateusdepaulajr.github.io/LibrAi/)
 
