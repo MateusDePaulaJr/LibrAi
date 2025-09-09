@@ -21,11 +21,6 @@
   Tradução de frases pré-configuradas em **vídeos de Libras**.  
   Fácil de expandir: edite `public/data/phrases.json` e adicione vídeos em `public/clips/`.
 
-- 🧑‍🤝‍🧑 **Avatar animado**  
-  - **Normal**: mascote LibrAi acolhedor  
-  - **Ouvindo**: mão na orelha + ondas sonoras  
-  - **Lendo**: com óculos 👓  
-
 - 🌗 **Alto contraste (H)**  
   Alterna entre modo padrão e alto contraste para leitura acessível.
 
@@ -90,4 +85,4 @@ Este projeto está sob a licença MIT — sinta-se à vontade para usar, modific
 
 ---
 
-👋 Desenvolvido com ❤️ por [Mateus Junior](https://github.com/MateusDePaulaJr)
+👋 Desenvolvido por [Mateus Junior](https://github.com/MateusDePaulaJr)
