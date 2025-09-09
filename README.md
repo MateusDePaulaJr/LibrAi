@@ -1,5 +1,7 @@
 # 🖐️ LibrAi
 
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-LibrAi-blue?logo=github)](https://mateusdepaulajr.github.io/LibrAi/)
+
 > **Comunicação sem barreiras** — um app acessível que traduz fala, texto e frases simples em **Libras**, além de oferecer leitura em voz alta.  
 > Construído com foco em **acessibilidade, inclusão e usabilidade**.
 
@@ -35,11 +37,13 @@
 LibrAi/
  ├─ public/
  │   ├─ assets/           # Imagens e avatar
- │   ├─ clips/            # Coloque aqui os vídeos em Libras (.mp4)
+ │   ├─ clips/            # Clipes de Libras (.mp4)
  │   ├─ data/phrases.json # Mapeia frases → vídeos
  │   ├─ index.html        # Página principal
  │   ├─ style.css         # Estilos
  │   └─ scripts.js        # Lógica do app
+ ├─ .gitignore
+ ├─ LICENSE
  └─ README.md
 ```
 
