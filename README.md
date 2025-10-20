@@ -1,4 +1,5 @@
-# 🖐️ LibrAi - EM DESENVOLVIMENTO
+# LibrAi - EM DESENVOLVIMENTO
+  #Trabalho do primeiro período da faculdade.
 
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-LibrAi-blue?logo=github)](https://mateusdepaulajr.github.io/LibrAi/)
 
